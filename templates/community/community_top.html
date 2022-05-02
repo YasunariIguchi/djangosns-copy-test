@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/offcanvas-navbar/">
+<div class="d-flex align-items-center bg-purple rounded shadow-sm">
+    <div class="lh-1">
+        <h2 class=" mb-0 lh-1">「{{ Community.name }}」のコミュニティ</h2>
+        {% if Community.memo %}
+        <p>{{ Community.memo }}</p>
+        {% endif %}
+        <small>作成者:<a href="{% url 'accounts:profile' username=Community.created_by %}">{{ Community.created_by }}</a>,作成日時:{{ Community.created_at }}</small>
+    </div>
+</div>
+
+
+<div class="my-3 p-3 bg-body rounded shadow-sm">
+    <h6 class="border-bottom pb-2 mb-0">このコミュニティへの投稿一覧</h6>
+    {% for post in CommunityPost %}
+    {% if post.parent_id == None %}
+    <div style="background-color:#EDF7FF;" class="d-flex text-muted pt-3">
+    {% else %}
+    <div class="d-flex text-muted pt-3">
+    {% endif %}
+        <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
+            xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
+            preserveAspectRatio="xMidYMid slice" focusable="false">
+            <title>Placeholder</title>
+            {% if post.parent_id == None %}
+            <rect width="100%" height="100%" fill="#007bff" />
+            {% else %}
+            <rect width="50%" height="50%" fill="#000000" />
+            {% endif %}
+            <text x="50%" y="50%" fill="#007bff"
+                dy=".3em"></text>
+        </svg>
+
+        <p class="pb-3 mb-0 small lh-sm border-bottom">
+            {% if post.parent_id == None %}
+            <strong class="d-block text-gray-dark"><a href="{% url 'accounts:profile' username=post.author %}">{{ post.author }}</a> <small>{{ post.created_at }}</small></strong>
+            {% else %}
+            <strong class="d-block text-gray-dark">{{ post.parent }}への返信:<a href="{% url 'accounts:profile' username=post.author %}">{{　post.author }}</a> <small>{{ post.created_at }}</small></strong>
+            {% endif %}
+            <font size="4">{{ post.content }}</font>
+            {% if user.is_authenticated %}
+            <a href="{% url 'community:reply_create' comment_pk=post.id name=Community.name%}">返信</a>
+            {% endif %}
+        </p>
+    </div>
+    {% endfor %}
+    <small class="d-block text-end">
+        <a href="{% url 'community:community_top' Community %}">All updates</a>
+    </small>
+</div>
+
+{% if user.is_authenticated %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-warning">コミュニティに投稿</button>
+</form>
+{% endif %}
+{% endblock %}

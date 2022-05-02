@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    {% extends 'base.html' %}
+    {% block content %}
+    <main>
+        <h2>プロフィール編集</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="保存">
+        </form>
+        {% endblock %}
+</html>

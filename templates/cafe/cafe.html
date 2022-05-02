@@ -1,0 +1,16 @@
+{% extends "base_cafe.html" %}
+{% load static %}
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'cafe/cafe.css' %}">
+{% endblock %}
+{% block content %}
+<li><a href="{% url 'post:post_list' %}">トップページ</a></li>
+
+<!--
+<div id="cafe_page">
+    <div id="user_status">
+        <img src="{% static 'images/cafe.png' %}" class="cafe">
+    </div>
+</div>
+-->
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/user_profile.css' %}">
+{% endblock %}
+{% block content %}
+<div>
+    <div>
+        <h2>{{ username }}さんのフォロワーリスト</h2>
+    </div>
+    <div>
+        {% if follower %}
+        {% for fw in follower %}
+        <a href="{% url 'accounts:profile' username=fw.follower %}">{{ fw.follower }}</a>
+        {% endfor %}
+        {% else %}
+        <p>まだフォロワーはいません</p>
+        {% endif %}
+
+    </div>
+
+
+</div>
+{% endblock %}

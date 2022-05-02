@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/offcanvas-navbar/">
+<div class="d-flex align-items-center bg-purple rounded shadow-sm">
+    <div class="lh-1">
+        <h2 class=" mb-0 lh-1">返信</h2>
+    </div>
+</div>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">送信</button>
+</form>
+
+{% endblock %}
