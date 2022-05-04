@@ -1,0 +1,9 @@
+{% for reply in reply_list %}
+    <div class="box">
+        <p>{{ reply.text }}</p>
+        <a href="{% url 'blog:reply_create' reply.pk %}">返信する</a>
+        {% with reply_list=reply.comment_set.all %}
+            {% include 'post/includes/reply.html' %}
+        {% endwith %}
+    </div>
+{% endfor %}

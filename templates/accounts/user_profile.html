@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/user_profile.css' %}">
+{% endblock %}
+{% block content %}
+<div id="profile_page">
+    <div id="user_status">
+        {% if User.icon %}
+        <img src="{{ User.icon.url }}" class="user-icon">
+        {% else %}
+        <img src="{% static 'images/user_icon.png' %}" class="user-icon">
+        {% endif %}
+        <h2>{{ User.username }}</h2>
+        {% if User.introduction %}
+        <p>{{ User.introduction }}</p>
+        {% endif %}
+    </div>
+    <div class="button_field">
+    
+        <!--もしプロフィールの遷移先が自分のプロフィールである場合の表示ボタン-->
+        {% if User.username == user.get_username %}
+        <a href="{% url 'accounts:user_update' User.id %}" class="followBtn">プロフィール編集</a>
+        　　　　
+        <!--プロフィールの遷移先が自分がフォローしているユーザーの場合の表示ボタン-->
+        {% elif connected %}
+        <a href="{% url 'accounts:unfollow' User %}" class="followBtn">フォロー解除</a>
+        <!--自分がフォローしていないユーザーの場合の表示ボタン-->
+        {% else %}
+        <a href="{% url 'accounts:follow' User %}" class="followBtn">フォローする</a>
+        {% endif %}
+    
+    </div>
+    
+    <div class="follow_count">
+        <ul>
+            <li>
+                　　　　　　　
+                <!--フォロー数を表示-->
+                <p>フォロー数</p>
+                <h2><a href="{% url 'accounts:following_list' User %}">{{ following }}</a></h2>
+            </li>
+            <li>
+                <!--フォロワー数を表示-->
+                <p>フォロワー数</p>
+                <h2><a href="{% url 'accounts:follower_list' User %}">{{ follower }}</a></h2>
+            </li>
+        </ul>
+    </div>
+
+    <div id="user_post">
+        <p class="list-t">{{ User.username }}さんの投稿一覧</p>
+        {% for post in post_list %}
+        <a href="{% url 'accounts:profile' username=post.author %}">{{ post.author }}</a> {{ post.created_at }}
+        <p>{{ post.content }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
