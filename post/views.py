@@ -69,7 +69,7 @@ def post_list(request):
         location=[y, x],
         popup = popup,
         icon=folium.Icon(color='red', icon='home')
-        ).add_to(ma)
+        ).add_to(map)
     else:
         for l in Community.objects.all():
             name = l.name
