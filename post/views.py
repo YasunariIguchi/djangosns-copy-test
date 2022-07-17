@@ -61,7 +61,7 @@ def post_list(request):
         x = 135.495734
         y = 34.700559
         url = request._current_scheme_host+'/community/community_create'
-        html = '<a href = "'+ url +'" target="_blank" rel="noopener noreferrer">コミュニティを作る</a>'
+        html = '<a href = "'+ url +'" target="new" rel="noopener noreferrer">コミュニティを作る</a>'
         iframe = branca.element.IFrame(html=html, width=300, height=500)
         popup = folium.Popup(iframe, max_width=300)
         map = folium.Map(location=[y, x], zoom_start=15)
@@ -69,14 +69,14 @@ def post_list(request):
         location=[y, x],
         popup = popup,
         icon=folium.Icon(color='red', icon='home')
-        ).add_to(map)
+        ).add_to(ma)
     else:
         for l in Community.objects.all():
             name = l.name
             x = l.lon
             y = l.lat
             url = request._current_scheme_host+'/community/community_top/' + str(name) + '/'
-            html = '<a href = "'+url + '" target="_blank" rel="noopener noreferrer">' + str(name) + '</a>'
+            html = '<a href = "'+url + '" target="new" rel="noopener noreferrer">' + str(name) + '</a>'
             iframe = branca.element.IFrame(html=html, width=300, height=500)
             popup = folium.Popup(iframe, max_width=300)
             folium.Marker(
