@@ -159,6 +159,10 @@ if not DEBUG:
     SECRET_KEY = os.environ['SECRET_KEY']
     # Heroku settings
     # staticの設定
+    try:
+        DEBUG=os.environ['DEBUG']
+    except KeyError:
+        pass
     import os
     import django_heroku
 
