@@ -16,7 +16,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-<header class="p-3 bg-dark text-white">
+<header class="p-3 bg-dark text-white sticky-top">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <a href="{% url 'post:post_list' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
@@ -27,11 +27,16 @@
             </href=>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="{% url 'post:post_list' %}" class="nav-link px-2 text-white">Home</a></li>
+                <!--
+                                <li><a href="{% url 'post:post_list' %}" class="nav-link px-2 text-white">Home</a></li>
+                -->
+                <li><a href="{% url 'community:community_create' %}" class="nav-link px-2 text-white">Create Community</a></li>
+                <!--
                 <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
                 <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>
                 <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
                 <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+                -->
             </ul>
 
             <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -68,6 +73,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if request.user.is_authenticated %}
                 <li><a href="{% url 'accounts:profile' request.user.username %}">プロフィール</a></li>
+                <li><a href="{% url 'community:community_create' %}">コミュニティ作成</a></li>
                 {% endif %}
                 <li><a href="{% url 'admin:index' %}">管理ページ</a></li>
             </ul>
@@ -78,5 +84,6 @@
     <!-- ここにページ毎のコンテンツを記述 -->
     {% endblock %}
 </body>
+<script src="https://ajaxzip3.github.io/ajaxzip3.js" charset="UTF-8"></script>
 
 </html>

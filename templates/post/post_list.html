@@ -21,14 +21,11 @@
         </div>
     </div>-->
     {% if user.is_authenticated %}
-            <li><a href="{% url 'community:community_create' %}">コミュニティ作成</a></li>
-            <li><a href="{% url 'post:index' %}">csv書き出し</a></li>
+            <div> {{ map | safe }}</div>
+            {% else %}
+            <h1>サインアップかログインをしてcafetimeの世界と繋がろう</h1>
             {% endif %}
-            
-    <h1>コミュニティ一覧</h1>
-    {% for community in community_list %}
-    <p><a href="{% url 'community:community_top' community.name %}">{{ community.name }}</a></p>
-    {% endfor %}
+    
     {% endblock %}
 </body>
 </html>

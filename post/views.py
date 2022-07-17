@@ -3,14 +3,17 @@ from .forms import PostCreateForm
 from .models import Post
 from community.models import Community
 from django.contrib.auth import login
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .forms import SignUpForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(LoginView, LogoutView)
 from .forms import LoginForm
-from .application import write_data
+from community.models import Community
+import folium
+from folium import plugins
+import branca
 
 
 class SignUp(CreateView):
@@ -50,12 +53,46 @@ def post_list(request):
             comment.display = counter
             comment.save()
             cid = comment.id
+    counter = 0
+
+    size = Community.objects.all().count()
+    map = folium.Map(location=[34.700559, 135.495734], zoom_start=15)
+    if Community.objects.first() is None:
+        x = 135.495734
+        y = 34.700559
+        url = request._current_scheme_host+'/community/community_create'
+        html = '<a href = "'+ url +'" target="_blank" rel="noopener noreferrer">コミュニティを作る</a>'
+        iframe = branca.element.IFrame(html=html, width=300, height=500)
+        popup = folium.Popup(iframe, max_width=300)
+        map = folium.Map(location=[y, x], zoom_start=15)
+        folium.Marker(
+        location=[y, x],
+        popup = popup,
+        icon=folium.Icon(color='red', icon='home')
+        ).add_to(map)
+    else:
+        for l in Community.objects.all():
+            name = l.name
+            x = l.lon
+            y = l.lat
+            url = request._current_scheme_host+'/community/community_top/' + str(name) + '/'
+            html = '<a href = "'+url + '" target="_blank" rel="noopener noreferrer">' + str(name) + '</a>'
+            iframe = branca.element.IFrame(html=html, width=300, height=500)
+            popup = folium.Popup(iframe, max_width=300)
+            folium.Marker(
+            location=[y, x],
+            popup = popup,
+            icon=folium.Icon(color='red', icon='home')
+            ).add_to(map)
+    plugins.LocateControl(auto_start=False).add_to(map)
+    map = map._repr_html_()
 
 
     context = {
         'post_list': Post.objects.order_by("display"),
         'reply_list': Post.objects.filter(parent__isnull=True),
-        'community_list': Community.objects.all()
+        'community_list': Community.objects.all(),
+        'map': map
 
     }
     return render(request, 'post/post_list.html', context)
@@ -82,18 +119,6 @@ class Login(LoginView):
 class Logout(LoginRequiredMixin, LogoutView):
     """ログアウトページ"""
     template_name = 'accounts/login.html'
-
-# Create your views here.
-def index(req):
-    return render(req, 'post/index.html')
-
-# ajaxでurl指定したメソッド
-def call_write_data(req):
-    if req.method == 'GET':
-        # write_data.pyのwrite_csv()メソッドを呼び出す。
-        # ajaxで送信したデータのうち"input_data"を指定して取得する。
-        write_data.write_csv(req.GET.get("input_data"))
-        return HttpResponse()
 
 def reply_create(request,comment_pk):
     comment = get_object_or_404(Post, id=comment_pk)

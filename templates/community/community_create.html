@@ -5,7 +5,17 @@
     <h2>コミュニティ作成</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        コミュニティ名<br>
+        {{ form.name }}<br>
+        コミュニティ説明<br>
+        {{ form.memo }}<br>
+        <!--x,y座標（ダミー）<br>
+        {{ form.lat }} {{ form.lon }}<br>
+        -->
+        郵便番号<br>
+        {{ form.zip21 }}-{{ form.zip22 }}<br>
+        住所（郵便番号から自動入力）
+        {{ form.addr21 }}<br>
         <button type="submit">コミュニティを作成</button>
     </form>
     {% endblock %}

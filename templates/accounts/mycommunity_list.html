@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/user_profile.css' %}">
+{% endblock %}
+{% block content %}
+<div>
+    <div>
+        <h2>{{ username }}さんのフォローリスト</h2>
+    </div>
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        {% if mycommunity %}
+        {% for fw in mycommunity %}
+        <p class="pb-3 mb-0 small lh-sm border-bottom"></p>
+            <strong class="d-block text-gray-dark"></strong><a href="{% url 'community:community_top' name=fw.mycommunity %}">{{ fw.mycommunity }}</a></strong><br>
+        </p>
+        {% endfor %}
+        {% else %}
+        <p>まだどこもフォローしていません</p>
+        {% endif %}
+    </div>
+
+
+</div>
+{% endblock %}

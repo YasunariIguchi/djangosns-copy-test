@@ -11,26 +11,23 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, password, **extra_fields):
 
         if not username:
             raise ValueError('The given username must be set')
 
-        if not email:
-            raise ValueError('The given email must be set')
-
         user = self.model(username=self.model.normalize_username(
-            username), email=self.normalize_email(email), **extra_fields)
+            username), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
+    def create_user(self, username, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, password, **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, username, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -40,12 +37,11 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True')
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=25, unique=True)
-    email = models.EmailField(unique=True)
     icon = models.ImageField(blank=True, null=True)
     introduction = models.CharField(max_length=75, blank=True, null=True)
     followers = models.ManyToManyField('self', blank=True, symmetrical=False)
@@ -65,9 +61,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(default=timezone.now)
     objects = UserManager()
-    EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    
 
     class Meta:
         verbose_name = _('user')
@@ -80,3 +75,11 @@ class Connection(models.Model):
 
     def __str__(self):
         return "{} : {}".format(self.follower.username, self.following.username)
+
+from community.models import Community
+class Mycommunity(models.Model):
+    mycommunity = models.ForeignKey(Community, related_name='mycommunity', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='comunity_follower', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{} : {}".format(self.mycommunity.name, self.follower.username)
