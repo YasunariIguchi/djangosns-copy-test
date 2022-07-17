@@ -2,6 +2,7 @@ from ast import IsNot
 from django.shortcuts import get_object_or_404, render,render, redirect
 from .forms import CommunityCreateForm, CommunityPostCreateForm
 from .models import Community, CommunityPost
+from accounts.models import Mycommunity, User
 import requests
 from bs4 import BeautifulSoup
 
@@ -81,8 +82,11 @@ def community_top(request, name):
             comment.display = counter
             comment.save()
             cid = comment.id
-
-    return render(request, 'community/community_top.html', {'form': form, 'Community': community, 'CommunityPost': CommunityPost.objects.filter(community=community).order_by("display")})
+    
+    communitypost=CommunityPost.objects.filter(community=community).order_by("display")
+    mycommunity = Mycommunity.objects.filter(mycommunity=community,follower=request.user).count()
+    s=mycommunity
+    return render(request, 'community/community_top.html', {'form': form, 'Community': community, 'CommunityPost': communitypost, 'mycommunity':s})
 
 def reply_create(request,comment_pk,name):
     community = Community.objects.get(name=name)

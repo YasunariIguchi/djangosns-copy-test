@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from post.models import Post
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
-from .models import User, Connection
+from .models import User, Connection, Mycommunity
+from community.models import Community,CommunityPost
 from django.views.generic import UpdateView
 
 
@@ -14,9 +15,10 @@ def user_profile(request, username):
     user_model = get_user_model().objects.get(username=username)
     context = {
         'User': user_model,
-        'post_list': Post.objects.filter(author=user_model.id),
+        'post_list': CommunityPost.objects.filter(author=user_model.id),
         'following': Connection.objects.filter(follower__username=username).count(),
         'follower': Connection.objects.filter(following__username=username).count(),
+        'mycommunity': Mycommunity.objects.filter(follower__username=username).count(),
     }
     if username is not request.user.username:
             result = Connection.objects.filter(follower__username=request.user.username).filter(following__username=username)
@@ -33,7 +35,7 @@ class OnlyYouMixin(UserPassesTestMixin):
 class UserUpdateView(OnlyYouMixin, UpdateView):
     template_name = 'accounts/user_update.html'
     model = User
-    fields = ('username', 'email', 'icon', 'introduction')
+    fields = ('username', 'icon', 'introduction')
 
     def get_success_url(self):
         return reverse('accounts:profile', kwargs={'username': User.objects.get(pk=self.object.pk).username})
@@ -108,3 +110,57 @@ def follower_list(request, username):
         'follower': Connection.objects.filter(following__username=username),
     }
     return render(request, 'accounts/follower_list.html', context)
+
+@login_required
+def mycommunity_follow_view(request, comid):
+    try:
+        #request.user.username = ログインユーザーのユーザー名を渡す。
+        follower = User.objects.get(username=request.user.username)
+        #kwargs['username'] = フォロー対象のユーザー名を渡す。
+        mycommunity = Community.objects.get(id=comid)
+        #例外処理：もしフォロー対象が存在しない場合、警告文を表示させる。
+    except Community.DoesNotExist:
+        messages.warning(request, 'コミュニティーは存在しません')
+        return HttpResponseRedirect(reverse_lazy('post:post_list'))
+    #フォローしようとしている対象が自分の場合、警告文を表示させる。
+    
+    _, created = Mycommunity.objects.get_or_create(mycommunity=mycommunity, follower=follower)
+
+        #もしcreatedがTrueの場合、フォロー完了のメッセージを表示させる。
+    if (created):
+        messages.success(request, '{}をフォローしました'.format(mycommunity.name))
+        #既にフォロー相手をフォローしていた場合、createdにはFalseが入る。
+        #フォロー済みのメッセージを表示させる。
+    else:
+        messages.warning(request, 'あなたはすでに{}をフォローしています'.format(mycommunity.name))
+    
+    community = Community.objects.get(id=comid)
+    name = community.name
+    return HttpResponseRedirect(reverse_lazy('community:community_top', kwargs={'name': name}))
+
+"""フォロー解除"""
+@login_required
+def mycommunity_unfollow_view(request, comid):
+    try:
+        follower = User.objects.get(username=request.user.username)
+        mycommunity = Community.objects.get(id=comid)
+        unfollow = Mycommunity.objects.get(follower=follower, mycommunity=mycommunity)
+        #フォロワー(自分)×フォロー(相手)という組み合わせを削除する。
+        unfollow.delete()
+        messages.success(request, 'あなたは{}のフォローを外しました'.format(mycommunity.name))
+    except Community.DoesNotExist:
+        messages.warning(request, '{}は存在しません'.format(mycommunity.name))
+        return HttpResponseRedirect(reverse_lazy('post:post_list'))
+    except Mycommunity.DoesNotExist:
+        messages.warning(request, 'あなたは{0}をフォローしませんでした'.format(mycommunity.name))
+    community = Community.objects.get(id=comid)
+    name = community.name
+
+    return HttpResponseRedirect(reverse_lazy('community:community_top', kwargs={'name': name}))
+
+def mycommunity_list(request, username):
+    context = {
+        'username': username,
+        'mycommunity': Mycommunity.objects.filter(follower__username=username),
+    }
+    return render(request, 'accounts/mycommunity_list.html', context)

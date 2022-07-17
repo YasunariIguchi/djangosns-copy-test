@@ -10,6 +10,11 @@
         <p>{{ Community.memo }}</p>
         {% endif %}
         <small>作成者:<a href="{% url 'accounts:profile' username=Community.created_by %}">{{ Community.created_by }}</a>,作成日時:{{ Community.created_at }}</small>
+        {% if mycommunity == 0 %}
+        <a href="{% url 'accounts:mycommunity_follow' comid=Community.id %}" class="followBtn">フォローする</a>
+        {% else %}
+        <a href="{% url 'accounts:mycommunity_unfollow' comid=Community.id%}" class="followBtn">フォロー解除</a>
+        {% endif %}
     </div>
 </div>
 

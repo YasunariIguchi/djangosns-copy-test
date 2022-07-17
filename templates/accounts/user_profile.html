@@ -46,6 +46,11 @@
                 <p>フォロワー数</p>
                 <h2><a href="{% url 'accounts:follower_list' User %}">{{ follower }}</a></h2>
             </li>
+            <li>
+                <!--フォロワー数を表示-->
+                <p>マイコミュニティ数</p>
+                <h2><a href="{% url 'accounts:mycommunity_list' User %}">{{ mycommunity }}</a></h2>
+            </li>
         </ul>
     </div>
 

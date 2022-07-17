@@ -12,6 +12,7 @@ from django.contrib.auth.views import(LoginView, LogoutView)
 from .forms import LoginForm
 from community.models import Community
 import folium
+from folium import plugins
 import branca
 
 
@@ -83,6 +84,7 @@ def post_list(request):
             popup = popup,
             icon=folium.Icon(color='red', icon='home')
             ).add_to(map)
+    plugins.LocateControl(auto_start=False).add_to(map)
     map = map._repr_html_()
 
 
